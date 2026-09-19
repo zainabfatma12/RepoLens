@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>RepoLens — Analysis</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+
+<nav class="navbar">
+
+    <a href="/" class="logo">
+
+        <div class="logo-mark">
+            ◈
+        </div>
+
+        RepoLens
+
+    </a>
+
+    <div class="nav-pill">
+        Repository Analysis
+    </div>
+
+</nav>
+
+
+<main class="dashboard-container">
+
+
+<div class="dashboard-header">
+
+    <div>
+
+        <h1 id="repoName">
+            Repository Analysis
+        </h1>
+
+        <p id="repoDescription">
+            Analyzing repository health...
+        </p>
+
+    </div>
+
+    <a
+        id="repoLink"
+        class="repo-link"
+        href="#"
+        target="_blank">
+
+        View on GitHub ↗
+
+    </a>
+
+</div>
+
+
+<div class="score-grid">
+
+
+<div class="glass-card score-card">
+
+    <div
+        class="score-circle"
+        id="scoreCircle"
+        style="--score: 0;">
+
+        <div class="score-number">
+
+            <strong id="score">
+                0
+            </strong>
+
+            <span>
+                / 100
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="score-level"
+        id="scoreLevel">
+
+        Calculating...
+
+    </div>
+
+</div>
+
+
+<div class="glass-card">
+
+    <div class="card-title">
+        Repository Overview
+    </div>
+
+
+    <div class="stats-grid">
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Language
+            </div>
+
+            <div
+                class="stat-value"
+                id="language">
+
+                —
+
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Stars
+            </div>
+
+            <div
+                class="stat-value"
+                id="stars">
+
+                0
+
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Forks
+            </div>
+
+            <div
+                class="stat-value"
+                id="forks">
+
+                0
+
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Recent Commits
+            </div>
+
+            <div
+                class="stat-value"
+                id="commits">
+
+                0
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<div class="two-column">
+
+
+<div class="glass-card">
+
+    <div class="card-title">
+
+        <span class="success">✓</span>
+
+        What looks good
+
+    </div>
+
+
+    <ul
+        class="list"
+        id="findings">
+
+    </ul>
+
+</div>
+
+
+<div class="glass-card">
+
+    <div class="card-title">
+
+        <span class="warning">!</span>
+
+        Recommended improvements
+
+    </div>
+
+
+    <ul
+        class="list"
+        id="warnings">
+
+    </ul>
+
+</div>
+
+
+</div>
+
+
+</main>
+
+
+<footer>
+
+    <span>
+        RepoLens · Hack Devengers 2.0
+    </span>
+
+    <span>
+        Repository Intelligence Dashboard
+    </span>
+
+</footer>
+
+
+<script>
+
+const rawData =
+    sessionStorage.getItem("repoLensResult");
+
+
+if (!rawData) {
+
+    window.location.href = "/";
+
+}
+
+
+const data = JSON.parse(rawData);
+
+const repo = data.repository;
+
+const analysis = data.analysis;
+
+
+// Repository
+
+document.getElementById("repoName")
+    .textContent = repo.full_name;
+
+
+document.getElementById("repoDescription")
+    .textContent =
+        repo.description ||
+        "No repository description available.";
+
+
+document.getElementById("repoLink")
+    .href = repo.html_url;
+
+
+// Score
+
+document.getElementById("score")
+    .textContent = analysis.score;
+
+
+document.getElementById("scoreLevel")
+    .textContent = analysis.level;
+
+
+document.getElementById("scoreCircle")
+    .style.setProperty(
+        "--score",
+        analysis.score
+    );
+
+
+// Stats
+
+document.getElementById("language")
+    .textContent =
+        repo.language || "Multiple";
+
+
+document.getElementById("stars")
+    .textContent =
+        repo.stars;
+
+
+document.getElementById("forks")
+    .textContent =
+        repo.forks;
+
+
+document.getElementById("commits")
+    .textContent =
+        analysis.commit_count;
+
+
+// Findings
+
+const findings =
+    document.getElementById("findings");
+
+
+analysis.findings.forEach(item => {
+
+    const li = document.createElement("li");
+
+    li.innerHTML =
+        `<span class="success">✓</span>${item}`;
+
+    findings.appendChild(li);
+
+});
+
+
+// Warnings
+
+const warnings =
+    document.getElementById("warnings");
+
+
+analysis.warnings.forEach(item => {
+
+    const li = document.createElement("li");
+
+    li.innerHTML =
+        `<span class="warning">!</span>${item}`;
+
+    warnings.appendChild(li);
+
+});
+
+</script>
+
+
+</body>
+</html>

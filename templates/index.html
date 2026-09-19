@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>RepoLens — GitHub Repository Intelligence</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <a href="/" class="logo">
+
+        <div class="logo-mark">
+            ◈
+        </div>
+
+        RepoLens
+
+    </a>
+
+    <div class="nav-pill">
+        GitHub Repository Intelligence
+    </div>
+
+</nav>
+
+
+<main>
+
+<section class="hero">
+
+    <div class="badge">
+
+        <span class="badge-dot"></span>
+
+        Open-source repository analyzer
+
+    </div>
+
+
+    <h1>
+
+        Make your GitHub
+        <span class="gradient-text">
+            portfolio-ready.
+        </span>
+
+    </h1>
+
+
+    <p>
+
+        RepoLens analyzes your GitHub repository across
+        documentation, structure, open-source readiness
+        and activity — then tells you exactly what to improve.
+
+    </p>
+
+
+    <div class="search-card">
+
+        <input
+            type="url"
+            id="repoUrl"
+            placeholder="https://github.com/username/repository"
+            autocomplete="off"
+        >
+
+        <button
+            class="analyze-btn"
+            onclick="analyzeRepo()">
+
+            Analyze Repository →
+
+        </button>
+
+    </div>
+
+
+    <div class="trust">
+
+        ✓ No GitHub login required
+        &nbsp;&nbsp;•&nbsp;&nbsp;
+        ✓ Public repositories
+        &nbsp;&nbsp;•&nbsp;&nbsp;
+        ✓ Instant analysis
+
+    </div>
+
+</section>
+
+
+<section class="features">
+
+    <div class="section-label">
+        WHAT REPOLENS CHECKS
+    </div>
+
+
+    <div class="feature-grid">
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                ◫
+            </div>
+
+            <h3>
+                Documentation
+            </h3>
+
+            <p>
+                Checks README quality, installation
+                instructions, features and usage
+                documentation.
+            </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                ◈
+            </div>
+
+            <h3>
+                Project Structure
+            </h3>
+
+            <p>
+                Examines source files, dependencies,
+                configuration and repository organization.
+            </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                ✦
+            </div>
+
+            <h3>
+                Open Source
+            </h3>
+
+            <p>
+                Detects licenses, contribution guidelines
+                and community-ready repository practices.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<footer>
+
+    <span>
+        RepoLens · Built for Hack Devengers 2.0
+    </span>
+
+    <span>
+        GitHub Repository Intelligence
+    </span>
+
+</footer>
+
+
+<script>
+
+async function analyzeRepo() {
+
+    const input = document.getElementById("repoUrl");
+
+    const button = document.querySelector(".analyze-btn");
+
+    const repoUrl = input.value.trim();
+
+
+    if (!repoUrl) {
+
+        alert("Please enter a GitHub repository URL.");
+
+        return;
+
+    }
+
+
+    button.disabled = true;
+
+    button.textContent = "Analyzing...";
+
+
+    try {
+
+        const response = await fetch("/analyze", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                repo_url: repoUrl
+            })
+
+        });
+
+
+        const data = await response.json();
+
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.error || "Unable to analyze repository."
+            );
+
+        }
+
+
+        sessionStorage.setItem(
+            "repoLensResult",
+            JSON.stringify(data)
+        );
+
+
+        window.location.href = "/dashboard";
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(error.message);
+
+        button.disabled = false;
+
+        button.textContent = "Analyze Repository →";
+
+    }
+
+}
+
+
+document
+    .getElementById("repoUrl")
+    .addEventListener("keydown", function(event) {
+
+        if (event.key === "Enter") {
+            analyzeRepo();
+        }
+
+    });
+
+</script>
+
+
+</body>
+</html>
